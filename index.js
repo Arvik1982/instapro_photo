@@ -1,4 +1,6 @@
+//import { user } from "../index.js";
 import { getPosts } from "./api.js";
+//import { getUserPosts } from "./api.js";
 import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
 import { renderAuthPageComponent } from "./components/auth-page-component.js";
 import {
@@ -19,10 +21,12 @@ import {
 export let user = getUserFromLocalStorage();
 export let page = null;
 export let posts = [];
+let arrNew=[]
 
 const getToken = () => {
   const token = user ? `Bearer ${user.token}` : undefined;
   return token;
+
 };
 
 export const logout = () => {
@@ -34,6 +38,7 @@ export const logout = () => {
 /**
  * Включает страницу приложения
  */
+
 export const goToPage = (newPage, data) => {
   if (
     [
@@ -67,21 +72,82 @@ export const goToPage = (newPage, data) => {
     }
 
     if (newPage === USER_POSTS_PAGE) {
+
       // TODO: реализовать получение постов юзера из API
       console.log("Открываю страницу пользователя: ", data.userId);
-      page = USER_POSTS_PAGE;
-      posts = [];
-      return renderApp();
+
+function photoList (){   
+  return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${data.userId}`, {
+  method: "GET",
+  headers: {
+    Authorization: user.token,
+  },
+})
+  .then((response) => {
+    if (response.status === 401) {
+      throw new Error("Нет авторизации");
     }
 
+    return response.json();
+  })
+  .then((data) => {
+    
+    console.log(data.posts)
+    return data.posts;
+    
+//   }).then((photoList)=>{
+//     appEl.innerHTML = `<div class="page-container">
+//     <div class="header-container"></div>
+//     <ul class="posts">
+//     <li class="post">
+//     <div class="post-header" data-user-id="id" >
+//     <img src="url image" class="post-header__user-image">
+//     <p class="post-header__user-name">user name</p>
+// </div>
+// <div class="post-image-container">
+//   <img class="post-image" src="url image">
+// </div>
+// <div class="post-likes">
+//   <button data-post-id="id" class="like-button">
+//     <img src="./assets/images/like-active.svg">
+//   </button>
+//   <p class="post-likes-text">
+//     Нравится: <strong>likes</strong>
+//   </p>
+// </div>
+// <p class="post-text">
+//   <span class="user-name">name</span>
+//     descr}
+// </p>
+// <p class="post-date">
+//   data}
+// </p>
+// </li>
+// </ul>
+// </div>`
+    
+  })
+
+}
+    let newConst = photoList()
+    console.log(newConst)
+    page = USER_POSTS_PAGE;
+    posts = [];
+    return renderApp();
+    
+    }
+    
     page = newPage;
     renderApp();
-
-    return;
+    
   }
 
   throw new Error("страницы не существует");
+  
 };
+//gotopage end
+
+
 
 const renderApp = () => {
   const appEl = document.getElementById("app");
@@ -124,9 +190,63 @@ const renderApp = () => {
   }
 
   if (page === USER_POSTS_PAGE) {
+
+    
+
+    // return renderPostsPageComponent({
+    //   appEl,
+    // });
     // TODO: реализовать страницу фотографию пользвателя
-    appEl.innerHTML = "Здесь будет страница фотографий пользователя";
-    return;
+
+
+    appEl.innerHTML = `<div class="page-container">
+    <div class="header-container"></div>
+    <ul class="posts">
+    <li class="post">
+    <div class="post-header" data-user-id="id" >
+    <img src="url image" class="post-header__user-image">
+    <p class="post-header__user-name">user name</p>
+</div>
+<div class="post-image-container">
+  <img class="post-image" src="url image">
+</div>
+<div class="post-likes">
+  <button data-post-id="id" class="like-button">
+    <img src="./assets/images/like-active.svg">
+  </button>
+  <p class="post-likes-text">
+    Нравится: <strong>likes</strong>
+  </p>
+</div>
+<p class="post-text">
+  <span class="user-name">name</span>
+    descr}
+</p>
+<p class="post-date">
+  data}
+</p>
+</li>
+</ul>
+</div>`
+    
+    
+    
+    //"Здесь будет страница фотографий пользователя";
+
+
+
+
+    // return getUserPosts({ token: getToken() })
+    //     .then((newPosts) => {
+    //       page = POSTS_PAGE;
+    //       posts = newPosts;
+    //       renderApp();
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //       goToPage(USER_POSTS_PAGE);
+    //     });
+
   }
 };
 

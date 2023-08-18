@@ -41,7 +41,7 @@ body::-webkit-scrollbar {
 p {
   margin: 0;
 }
-
+.button-photo,
 .button,
 .secondary-button {
   display: block;
@@ -52,6 +52,14 @@ p {
   background-color: #565eef;
   color: #ffffff;
   border: none;
+}
+.button-photo{
+  max-width: 50%;
+  align-self: center;}
+.button-post{
+  gap: 20px;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .link-button {
