@@ -17,11 +17,14 @@ import {
   removeUserFromLocalStorage,
   saveUserToLocalStorage,
 } from "./helpers.js";
-
+//import  token  from "./api.js"
+import { postsToIndex} from "./components/posts-page-component.js";
+import { loginedUserPosts } from "./components/add-post-page-component.js";
+//import {likePost} from "./components/posts-page-component.js"
 export let user = getUserFromLocalStorage();
 export let page = null;
 export let posts = [];
-let arrNew=[]
+
 
 const getToken = () => {
   const token = user ? `Bearer ${user.token}` : undefined;
@@ -61,6 +64,7 @@ export const goToPage = (newPage, data) => {
 
       return getPosts({ token: getToken() })
         .then((newPosts) => {
+          console.log(newPosts)
           page = POSTS_PAGE;
           posts = newPosts;
           renderApp();
@@ -72,83 +76,37 @@ export const goToPage = (newPage, data) => {
     }
 
     if (newPage === USER_POSTS_PAGE) {
-
+      page = LOADING_PAGE;
+      renderApp();
+      return loginedUserPosts()
+      .then((newPosts) => {
+        console.log(newPosts)
+        page = USER_POSTS_PAGE;
+        posts = [];
+        renderApp(newPosts);
+        
+      }) .catch((error) => {
+        console.error(error);
+        goToPage(POSTS_PAGE);
+      });
       // TODO: реализовать получение постов юзера из API
-      console.log("Открываю страницу пользователя: ", data.userId);
+      
+     
+      //console.log("Открываю страницу пользователя: ", data.userId);
 
-function photoList (){   
-  return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${data.userId}`, {
-  method: "GET",
-  headers: {
-    Authorization: user.token,
-  },
-})
-  .then((response) => {
-    if (response.status === 401) {
-      throw new Error("Нет авторизации");
-    }
 
-    return response.json();
-  })
-  .then((data) => {
     
-    console.log(data.posts)
-    return data.posts;
-    
-//   }).then((photoList)=>{
-//     appEl.innerHTML = `<div class="page-container">
-//     <div class="header-container"></div>
-//     <ul class="posts">
-//     <li class="post">
-//     <div class="post-header" data-user-id="id" >
-//     <img src="url image" class="post-header__user-image">
-//     <p class="post-header__user-name">user name</p>
-// </div>
-// <div class="post-image-container">
-//   <img class="post-image" src="url image">
-// </div>
-// <div class="post-likes">
-//   <button data-post-id="id" class="like-button">
-//     <img src="./assets/images/like-active.svg">
-//   </button>
-//   <p class="post-likes-text">
-//     Нравится: <strong>likes</strong>
-//   </p>
-// </div>
-// <p class="post-text">
-//   <span class="user-name">name</span>
-//     descr}
-// </p>
-// <p class="post-date">
-//   data}
-// </p>
-// </li>
-// </ul>
-// </div>`
-    
-  })
-
-}
-    let newConst = photoList()
-    console.log(newConst)
-    page = USER_POSTS_PAGE;
-    posts = [];
-    return renderApp();
     
     }
     
     page = newPage;
     renderApp();
-    
+    return;
   }
 
   throw new Error("страницы не существует");
   
 };
-//gotopage end
-
-
-
 const renderApp = () => {
   const appEl = document.getElementById("app");
   if (page === LOADING_PAGE) {
@@ -191,61 +149,72 @@ const renderApp = () => {
 
   if (page === USER_POSTS_PAGE) {
 
-    
 
+    //TODO: реализовать страницу фотографию пользвателя
+
+    loginedUserPosts() 
+    .then((data) => {
+      
+      console.log(data)
+      appEl.innerHTML=data.map((i,index)=>{
+        let likesAr =[] = i.likes
+        let likesName =[];
+        for (let index = 0; index < likesAr.length; index++) 
+        {
+        likesName.push(` ${likesAr[index].name}`)
+        } 
+  //render posts page new
+  return `<div class="page-container" id ="page-container-id">
+  <div class="header-container" ></div>
+  <ul class="posts"id ="posts-id">
+  <li class="post" id ="post-id">
+  <div class="post-header" data-user-id="${i.user.id}">
+  <img src="${i.user.imageUrl}" class="post-header__user-image">
+  <p class="post-header__user-name">${i.user.name}</p>
+  </div>
+  <div class="post-image-container">
+  <img class="post-image" src="${i.imageUrl}">
+  </div>
+  <div class="post-likes">
+  <button data-post-id="${i.id}" class="like-button">
+  <img src="./assets/images/like-active.svg">
+  </button>
+  <p class="post-likes-text" id ="likes-number-id">
+  Нравится: <strong>${i.likes.length}</strong>
+  </p>
+  </div>
+  <p class="post-text">
+  <span class="user-name">${likesName}</span>
+  ${i.description}
+  </p>
+  <p class="post-date">
+  ${i.createdAt}
+  </p>
+  </li>
+  </ul>
+  </div>`})
+
+//навесить лайки
+  console.log(`likes waiting`)
+  console.log(postsToIndex)//импортировать в файл массив или добыть массив самому
+  
+      })
+
+    
     // return renderPostsPageComponent({
     //   appEl,
     // });
-    // TODO: реализовать страницу фотографию пользвателя
+    
+    
+    
 
 
-    appEl.innerHTML = `<div class="page-container">
-    <div class="header-container"></div>
-    <ul class="posts">
-    <li class="post">
-    <div class="post-header" data-user-id="id" >
-    <img src="url image" class="post-header__user-image">
-    <p class="post-header__user-name">user name</p>
-</div>
-<div class="post-image-container">
-  <img class="post-image" src="url image">
-</div>
-<div class="post-likes">
-  <button data-post-id="id" class="like-button">
-    <img src="./assets/images/like-active.svg">
-  </button>
-  <p class="post-likes-text">
-    Нравится: <strong>likes</strong>
-  </p>
-</div>
-<p class="post-text">
-  <span class="user-name">name</span>
-    descr}
-</p>
-<p class="post-date">
-  data}
-</p>
-</li>
-</ul>
-</div>`
     
     
     
     //"Здесь будет страница фотографий пользователя";
 
 
-
-
-    // return getUserPosts({ token: getToken() })
-    //     .then((newPosts) => {
-    //       page = POSTS_PAGE;
-    //       posts = newPosts;
-    //       renderApp();
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //       goToPage(USER_POSTS_PAGE);
-    //     });
 
   }
 };
