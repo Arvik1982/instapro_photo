@@ -179,6 +179,7 @@ strong {
   display: none;
 }
 
+
 @keyframes loader {
   0% {
     top: 8px;
