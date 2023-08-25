@@ -18,9 +18,10 @@ import {
   saveUserToLocalStorage,
 } from "./helpers.js";
 //import  token  from "./api.js"
-import { postsToIndex} from "./components/posts-page-component.js";
+import { likePost} from "./components/posts-page-component.js";
 import { loginedUserPosts } from "./components/add-post-page-component.js";
 //import {likePost} from "./components/posts-page-component.js"
+import { reRenderPosts} from "./components/posts-page-component.js";
 export let user = getUserFromLocalStorage();
 export let page = null;
 export let posts = [];
@@ -195,8 +196,69 @@ const renderApp = () => {
   </div>`})
 
 //навесить лайки
-  console.log(`likes waiting`)
-  console.log(postsToIndex)//импортировать в файл массив или добыть массив самому
+  
+  loginedUserPosts().then((data)=>{
+    console.log(`likes waiting`)
+    let posts=data
+    console.log(posts)
+    const likePost = document.querySelectorAll('.like-button')
+  for (const likeEl of likePost) {
+    let post = posts.filter((item)=>
+    item.id===likeEl.dataset.postId)
+    console.log(post)
+  
+    likeEl.addEventListener("click", () => {      
+      if(post[0].isLiked===true){
+
+
+        return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/dislike`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${user.token}` },
+        }).then((response)=>{
+          return response.json()
+        }).then((data) => {
+          console.log(data)
+          return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/`,{
+          method: "GET",
+          headers: { Authorization: `Bearer ${user.token}` }, 
+        }).then((response)=>response.json()).then((data)=>{
+          console.log(data)
+          let likeData =data
+          
+        //re render pge posts
+        reRenderPosts(likeData)
+        return likeData
+      }).catch((err)=>{alert(`${err.message}`)})
+          
+      }).catch((err)=>{alert(`${err.message}`)})
+      }
+          
+      return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/like`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${user.token}` },
+        
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+        return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/`,{
+          method: "GET",
+          headers: { Authorization: `Bearer ${user.token}` }, 
+        }).then((response)=>response.json()).then((data)=>{console.log(data)
+          let likeData =data
+        
+        //rerender pge posts
+        reRenderPosts(likeData)
+        return likeData
+        }).catch((err)=>{alert(`${err.message}`)})
+
+
+      }).catch((err)=>{alert(`${err.message}`)})
+      
+    })}
+    
+  })
+  //console.log(postsToIndex)//импортировать в файл массив или добыть массив самому
   
       })
 

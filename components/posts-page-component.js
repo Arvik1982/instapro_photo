@@ -108,9 +108,13 @@ export function likePost(){
         method: "POST",
         headers: { Authorization: `Bearer ${user.token}` },
         
-      }).then((response) => {
+      })
+      .catch((error)=>{alert(`22222`)})
+      .then((response) => {
         return response.json()
-      }).then((data) => {
+      })
+      .catch((error)=>{alert(`11111`)})
+      .then((data) => {
         console.log(data)
         return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/`,{
           method: "GET",
@@ -130,7 +134,7 @@ export function likePost(){
       
     }
 
-    function reRenderPosts(likeData){
+    export function reRenderPosts(likeData){
     let newArr =[] 
     newArr=likeData.posts
     let postPage = document.getElementById('app')
