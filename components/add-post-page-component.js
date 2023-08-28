@@ -176,7 +176,7 @@ function addPostFunc() {
     });
   });
 }
-
+// получение постов залогиненного пользователя
 export function loginedUserPosts() {
   console.log(user);
 
@@ -196,3 +196,5 @@ export function loginedUserPosts() {
       return data.posts;
     });
 }
+
+// получение постов залогиненного пользователя

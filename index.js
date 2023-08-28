@@ -190,13 +190,13 @@ const renderApp = () => {
       //навесить лайки
 
       loginedUserPosts().then((data) => {
-        console.log(`likes waiting`);
+        //console.log(`likes waiting`);
         let posts = data;
-        console.log(posts);
+        //console.log(posts);
         const likePost = document.querySelectorAll(".like-button");
         for (const likeEl of likePost) {
           let post = posts.filter((item) => item.id === likeEl.dataset.postId);
-          console.log(post);
+          //console.log(post);
 
           likeEl.addEventListener("click", () => {
             if (post[0].isLiked === true) {
@@ -276,7 +276,7 @@ const renderApp = () => {
         }
       });
 
-      //console.log(postsToIndex)//импортировать в файл массив или добыть массив самому
+      
     });
 
     // return renderPostsPageComponent({
