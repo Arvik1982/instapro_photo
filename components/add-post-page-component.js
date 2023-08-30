@@ -71,17 +71,17 @@ function addPostFunc() {
   postPhotoInput.addEventListener(`change`, () => {
     postButtonLabel.classList.add("hide");
     postButtonAdd.classList.remove("hide");
-    console.log(postButtonAdd);
+    //console.log(postButtonAdd);
 
     const token = user.token;
-    console.log(user);
-    console.log(token);
+    //console.log(user);
+    //console.log(token);
     // let localImgRef = postPhotoInput.value
 
     //получение файла изображения
 
     let img = postPhotoInput.files[0];
-    console.log(img);
+    //console.log(img);
 
     function getRef() {
       const data = new FormData();
@@ -94,13 +94,13 @@ function addPostFunc() {
           return response.json();
         })
         .then((data) => {
-          console.log(`${data.fileUrl}`);
+          //console.log(`${data.fileUrl}`);
           const imgRef = data.fileUrl;
 
           const postImageInput = document.getElementById(`imagePost-input`);
-          console.log(postImageInput);
+          //console.log(postImageInput);
           postImageInput.classList.add("view");
-          console.log(postImageInput.innerHTML);
+          //console.log(postImageInput.innerHTML);
           return (postImageInput.innerHTML = `<img class="file-upload-image-big view" id="imagePost-input" src="${imgRef}" alt ="превью файла"/>`);
         });
     }
@@ -111,7 +111,7 @@ function addPostFunc() {
     postButtonAdd.addEventListener(`click`, () => {
       function loaderButton() {
         const postLoadButton = document.getElementById(`post-button`);
-        console.log(postLoadButton.innerHTML);
+        //console.log(postLoadButton.innerHTML);
         postLoadButton.disabled;
         return (postLoadButton.innerHTML = `<button disabled class="button-photo " id="post-button" >загружаем...</button>`);
       }
@@ -151,7 +151,7 @@ function addPostFunc() {
               if (data.result === "ok") {
                 //console.log(data)
                 const postLoadButton = document.getElementById(`post-button`);
-                console.log(postLoadButton.innerHTML);
+                //console.log(postLoadButton.innerHTML);
                 loginedUserPosts();
                 goToPage(USER_POSTS_PAGE);
                 return (postLoadButton.innerHTML = `<button disabled class="button-photo" id="post-button">готово</button>`);
@@ -162,7 +162,7 @@ function addPostFunc() {
             .catch((error) => {
               function loaderButton() {
                 const postLoadButton = document.getElementById(`post-button`);
-                console.log(postLoadButton.innerHTML);
+                //console.log(postLoadButton.innerHTML);
                 postLoadButton.disabled;
                 return (postLoadButton.innerHTML = `<button  class="button-photo " id="post-button" >загрузить</button>`);
               }
@@ -171,14 +171,14 @@ function addPostFunc() {
             });
         })
         .catch((err) => {
-          console.log(`${err}`);
+          //console.log(`${err}`);
         });
     });
   });
 }
 // получение постов залогиненного пользователя
 export function loginedUserPosts() {
-  console.log(user);
+  //console.log(user);
 
   userPostsId = user._id;
   return fetch(

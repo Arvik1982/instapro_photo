@@ -2,16 +2,14 @@ import { user } from "../index.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
 import { AUTH_PAGE, USER_POSTS_PAGE } from "../routes.js";
-import { loginedUserPosts } from "./add-post-page-component.js";
+import { dateFormat } from "../helpers.js";
+
 let userPostId;
-import { userPostsId } from "./add-post-page-component.js";
-//let isLiked;
 
 export function renderPostsPageComponent({ appEl }) {
-  //let userPostsAr=[];
   // TODO: реализовать рендер постов из api
 
-  console.log("Актуальный список постов:", posts);
+  //console.log("Актуальный список постов:", posts);
 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
@@ -57,14 +55,14 @@ export function renderPostsPageComponent({ appEl }) {
                         ${i.description}
                     </p>
                     <p class="post-date">
-                      ${i.createdAt}
+                      ${dateFormat(new Date(i.createdAt))}
                     </p>
                   </li>
                   </ul>
                   </div>`;
   });
   appEl.innerHTML = appHtml;
-  //likesRenderSelected(appEl);
+
   likePost(); //подключение лайков
 
   renderHeaderComponent({
@@ -107,8 +105,7 @@ export function likePost() {
               .then((data) => {
                 //console.log(data);
                 let likeData = data;
-                //likesRenderSelected(appEl);
-                //re render pge posts
+
                 reRenderPosts(likeData);
                 return likeData;
               });
@@ -141,8 +138,7 @@ export function likePost() {
             .then((data) => {
               //console.log(data);
               let likeData = data;
-              //likesRenderSelected(appEl);
-              //rerender pge posts
+
               reRenderPosts(likeData);
               return likeData;
             });
@@ -156,7 +152,7 @@ export function reRenderPosts(likeData) {
   newArr = likeData.posts;
   let postPage = document.getElementById("app");
 
-  console.log(postPage.innerHTML);
+  //console.log(postPage.innerHTML);
   postPage.innerHTML = newArr.map((i, index) => {
     let likesAr = ([] = i.likes);
     let likesName = [];
@@ -193,7 +189,7 @@ export function reRenderPosts(likeData) {
 ${i.description}
 </p>
 <p class="post-date">
-${i.createdAt}
+${dateFormat(new Date(i.createdAt))}
 </p>
 </li>
 </ul>
@@ -202,6 +198,7 @@ ${i.createdAt}
   // переход на  страницу пользователя после пересоздания страницы
   for (let userEl of document.querySelectorAll(".post-header")) {
     userEl.addEventListener("click", () => {
+      //console.log(`1111111333333`);
       let userPosts = [];
       return fetch(
         `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
@@ -254,12 +251,122 @@ ${i.createdAt}
             ${i.description}
             </p>
             <p class="post-date">
-            ${i.createdAt}
+            ${dateFormat(new Date(i.createdAt))}
             </p>
             </li>
             </ul>
             </div>`;
           });
+
+          //console.log(`подключить лайки`);
+
+          //подключение лайков к странице пользователя
+          return fetch(
+            `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
+            {
+              method: "GET",
+              headers: { Authorization: `Bearer ${user.token}` },
+            }
+          )
+            .then((response) => {
+              return response.json();
+            })
+
+            .then((data) => {
+              //console.log(data);
+
+              const likePost = document.querySelectorAll(".like-button");
+              for (const likeEl of likePost) {
+                let posts = data.posts;
+                let post = posts.filter(
+                  (item) => item.id === likeEl.dataset.postId
+                );
+
+                likeEl.addEventListener("click", () => {
+                  //console.log(`1111`);
+
+                  if (user === null) {
+                    alert(`Для простановки лайков нужно зайти в приложение!`);
+                    goToPage(AUTH_PAGE);
+                  }
+                  if (post[0].isLiked === true) {
+                    return fetch(
+                      `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/dislike`,
+                      {
+                        method: "POST",
+                        headers: { Authorization: `Bearer ${user.token}` },
+                      }
+                    )
+                      .then((response) => {
+                        return response.json();
+                      })
+                      .then((data) => {
+                        //console.log(`like -${data}`);
+
+                        return fetch(
+                          `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
+                          {
+                            method: "GET",
+                            headers: { Authorization: `Bearer ${user.token}` },
+                          }
+                        )
+                          .then((response) => response.json())
+                          .then((data) => {
+                            let likeData = data;
+
+                            reRenderPostsUser(data);
+
+                            return likeData;
+                          })
+                          .catch((err) => {
+                            alert(`${err.message}`);
+                          });
+                      });
+                  }
+
+                  return fetch(
+                    `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/like`,
+                    {
+                      method: "POST",
+                      headers: { Authorization: `Bearer ${user.token}` },
+                    }
+                  )
+                    .then((response) => {
+                      return response.json();
+                    })
+
+                    .then((data) => {
+                      //console.log(`like -${data}`);
+
+                      return fetch(
+                        `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
+                        {
+                          method: "GET",
+                          headers: { Authorization: `Bearer ${user.token}` },
+                        }
+                      )
+                        .then((response) => response.json())
+                        .then((data) => {
+                          let likeData = data;
+
+                          reRenderPostsUser(data);
+
+                          return likeData;
+                        })
+                        .catch((err) => {
+                          alert(`${err.message}`);
+                        });
+                    });
+                });
+
+                // });
+              }
+
+              //
+              return data.posts;
+            });
+
+          //конец likes
         })
         .catch((err) => {
           alert(`${err.message}`);
@@ -271,14 +378,12 @@ ${i.createdAt}
     element: document.querySelector(".header-container"),
   });
 
-  console.log(postPage.innerHTML);
-
   const likePost = document.querySelectorAll(".like-button");
   for (const likeEl of likePost) {
     let post = newArr.filter((item) => item.id === likeEl.dataset.postId);
 
     likeEl.addEventListener("click", () => {
-      console.log(post[0]);
+      //console.log(post[0]);
       if (post[0].isLiked === true) {
         return fetch(
           `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/dislike`,
@@ -291,7 +396,7 @@ ${i.createdAt}
             return response.json();
           })
           .then((data) => {
-            console.log(`dislike -${data}`);
+            //console.log(`dislike -${data}`);
             return fetch(
               `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/`,
               {
@@ -328,7 +433,7 @@ ${i.createdAt}
           return response.json();
         })
         .then((data) => {
-          console.log(`like -${data}`);
+          //console.log(`like -${data}`);
           //console.log(data);
           return fetch(
             `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/`,
@@ -367,15 +472,14 @@ export function userPageOpen(appEl) {
 
       if (user === null) {
         //alert(`Посмотрим без авторизации!`)
-        // for (let el of document.querySelectorAll(".post-header")) {
-        //el.addEventListener("click", () => {
+
         let userPosts = posts.filter(
           (item) => item.user.id === userEl.dataset.userId
         );
-        console.log(userEl.dataset);
-        console.log(userEl.dataset.userId);
-        console.log(posts);
-        console.log(userPosts);
+        //console.log(userEl.dataset);
+        //console.log(userEl.dataset.userId);
+        //console.log(posts);
+        //console.log(userPosts);
         appEl.innerHTML = userPosts.map((i) => {
           let likesAr = ([] = i.likes);
           let likesName = [];
@@ -410,7 +514,7 @@ export function userPageOpen(appEl) {
     ${i.description}
 </p>
 <p class="post-date">
-  ${i.createdAt}
+  ${dateFormat(new Date(i.createdAt))}
 </p>
 </li>
 </ul>
@@ -471,7 +575,7 @@ export function userPageOpen(appEl) {
               ${i.description}
           </p>
           <p class="post-date">
-            ${i.createdAt}
+            ${dateFormat(new Date(i.createdAt))}
           </p>
         </li>
         </ul>
@@ -492,7 +596,7 @@ export function userPageOpen(appEl) {
               })
 
               .then((data) => {
-                console.log(data);
+                //console.log(data);
 
                 const likePost = document.querySelectorAll(".like-button");
                 for (const likeEl of likePost) {
@@ -502,7 +606,7 @@ export function userPageOpen(appEl) {
                   );
 
                   likeEl.addEventListener("click", () => {
-                    console.log(`1111`);
+                    //console.log(`1111`);
 
                     if (user === null) {
                       alert(`Для простановки лайков нужно зайти в приложение!`);
@@ -520,29 +624,28 @@ export function userPageOpen(appEl) {
                           return response.json();
                         })
                         .then((data) => {
-                         
-          console.log(`like -${data}`);
-          
-          return fetch(
-            `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
-            {
-              method: "GET",
-              headers: { Authorization: `Bearer ${user.token}` },
-            }
-          )
-            .then((response) => response.json())
-            .then((data) => {
-            
-              let likeData = data;
-              
-              reRenderPostsUser(data);
-              
+                          //console.log(`like -${data}`);
 
-              return likeData;
-            })
-            .catch((err) => {
-              alert(`${err.message}`);
-            }); 
+                          return fetch(
+                            `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
+                            {
+                              method: "GET",
+                              headers: {
+                                Authorization: `Bearer ${user.token}`,
+                              },
+                            }
+                          )
+                            .then((response) => response.json())
+                            .then((data) => {
+                              let likeData = data;
+
+                              reRenderPostsUser(data);
+
+                              return likeData;
+                            })
+                            .catch((err) => {
+                              alert(`${err.message}`);
+                            });
                         });
                     }
 
@@ -558,51 +661,47 @@ export function userPageOpen(appEl) {
                       })
 
                       .then((data) => {
-                        
-          console.log(`like -${data}`);
-          
-          return fetch(
-            `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
-            {
-              method: "GET",
-              headers: { Authorization: `Bearer ${user.token}` },
-            }
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              
-              let likeData = data;
-              
-              reRenderPostsUser(data);
+                        //console.log(`like -${data}`);
 
-              return likeData;
-            })
-            .catch((err) => {
-              alert(`${err.message}`);
-            });
+                        return fetch(
+                          `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
+                          {
+                            method: "GET",
+                            headers: { Authorization: `Bearer ${user.token}` },
+                          }
+                        )
+                          .then((response) => response.json())
+                          .then((data) => {
+                            let likeData = data;
+
+                            reRenderPostsUser(data);
+
+                            return likeData;
+                          })
+                          .catch((err) => {
+                            alert(`${err.message}`);
+                          });
                       });
                   });
 
                   // });
                 }
 
-                //
                 return data.posts;
               });
-
-           });
+          });
+        //конец
       }
     });
   }
 }
-
 
 export function reRenderPostsUser(data) {
   let newArr = [];
   newArr = data.posts;
   let postPage = document.getElementById("app");
 
-  console.log(postPage.innerHTML);
+  //console.log(postPage.innerHTML);
   postPage.innerHTML = newArr.map((i, index) => {
     let likesAr = ([] = i.likes);
     let likesName = [];
@@ -639,7 +738,7 @@ export function reRenderPostsUser(data) {
 ${i.description}
 </p>
 <p class="post-date">
-${i.createdAt}
+${dateFormat(new Date(i.createdAt))}
 </p>
 </li>
 </ul>
@@ -700,14 +799,13 @@ ${i.createdAt}
             ${i.description}
             </p>
             <p class="post-date">
-            ${i.createdAt}
+            ${dateFormat(new Date(i.createdAt))}
             </p>
             </li>
             </ul>
             </div>`;
           });
-        })
-        
+        });
     });
   }
 
@@ -715,14 +813,14 @@ ${i.createdAt}
     element: document.querySelector(".header-container"),
   });
 
-  console.log(postPage.innerHTML);
+  //console.log(postPage.innerHTML);
 
   const likePost = document.querySelectorAll(".like-button");
   for (const likeEl of likePost) {
     let post = newArr.filter((item) => item.id === likeEl.dataset.postId);
 
     likeEl.addEventListener("click", () => {
-      console.log(post[0]);
+      //console.log(post[0]);
       if (post[0].isLiked === true) {
         return fetch(
           `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/dislike`,
@@ -735,11 +833,44 @@ ${i.createdAt}
             return response.json();
           })
           .then((data) => {
-            console.log(`dislike -${data}`);
+            //console.log(`dislike -${data}`);
 
             for (let userEl of document.querySelectorAll(".post-header")) {
+              return fetch(
+                `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
+                {
+                  method: "GET",
+                  headers: { Authorization: `Bearer ${user.token}` },
+                }
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  //console.log(data);
+                  let likeData = data;
+                  //goToPage(USER_POSTS_PAGE)
+                  reRenderPostsUser(data);
+                  //re render pge posts
+                  return likeData;
+                });
+            }
+          });
+      }
 
+      return fetch(
+        `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/like`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          //console.log(`like -${data}`);
 
+          for (let userEl of document.querySelectorAll(".post-header")) {
+            //console.log(data);
             return fetch(
               `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
               {
@@ -754,49 +885,11 @@ ${i.createdAt}
                 //goToPage(USER_POSTS_PAGE)
                 reRenderPostsUser(data);
                 //re render pge posts
+
                 return likeData;
-              })
-            }
-              
-          })
-          
-      }
-
-      return fetch(
-        `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/${likeEl.dataset.postId}/like`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${user.token}` },
-        }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log(`like -${data}`);
-
-          for (let userEl of document.querySelectorAll(".post-header")) {
-          //console.log(data);
-          return fetch(
-            `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${userEl.dataset.userId}`,
-            {
-              method: "GET",
-              headers: { Authorization: `Bearer ${user.token}` },
-            }
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              //console.log(data);
-              let likeData = data;
-              //goToPage(USER_POSTS_PAGE)
-              reRenderPostsUser(data);
-              //re render pge posts
-
-              return likeData;
-            })
+              });
           }
-        })
-        
+        });
     });
   }
 }

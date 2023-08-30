@@ -1,6 +1,6 @@
-//import { user } from "../index.js";
 import { getPosts } from "./api.js";
-//import { getUserPosts } from "./api.js";
+//import { format } from "date-fns";
+import { dateFormat } from "../helpers.js";
 import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
 import { renderAuthPageComponent } from "./components/auth-page-component.js";
 import {
@@ -128,7 +128,7 @@ const renderApp = () => {
       appEl,
       onAddPostClick({ description, imageUrl }) {
         // TODO: реализовать добавление поста в API
-        console.log("Добавляю пост...", { description, imageUrl });
+        //console.log("Добавляю пост...", { description, imageUrl });
         goToPage(POSTS_PAGE);
       },
     });
@@ -180,7 +180,7 @@ const renderApp = () => {
   ${i.description}
   </p>
   <p class="post-date">
-  ${i.createdAt}
+  ${dateFormat(new Date(i.createdAt))}
   </p>
   </li>
   </ul>
@@ -223,7 +223,7 @@ const renderApp = () => {
                     .then((data) => {
                       //console.log(data)
                       let likeData = data;
-                      goToPage(USER_POSTS_PAGE)
+                      goToPage(USER_POSTS_PAGE);
                       //re render pge posts
                       //reRenderPosts(likeData);
                       return likeData;
@@ -260,7 +260,7 @@ const renderApp = () => {
                   .then((data) => {
                     //console.log(data)
                     let likeData = data;
-                    goToPage(USER_POSTS_PAGE)
+                    goToPage(USER_POSTS_PAGE);
                     //rerender pge posts
                     //reRenderPosts(likeData);
                     return likeData;
@@ -275,8 +275,6 @@ const renderApp = () => {
           });
         }
       });
-
-      
     });
 
     // return renderPostsPageComponent({
