@@ -3,6 +3,7 @@ import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
 import { AUTH_PAGE, USER_POSTS_PAGE } from "../routes.js";
 import { dateFormat } from "../helpers.js";
+import { format } from "date-fns";
 
 let userPostId;
 
@@ -55,7 +56,7 @@ export function renderPostsPageComponent({ appEl }) {
                         ${i.description}
                     </p>
                     <p class="post-date">
-                      ${dateFormat(new Date(i.createdAt))}
+                      ${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
                     </p>
                   </li>
                   </ul>
@@ -189,7 +190,7 @@ export function reRenderPosts(likeData) {
 ${i.description}
 </p>
 <p class="post-date">
-${dateFormat(new Date(i.createdAt))}
+${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
 </p>
 </li>
 </ul>
@@ -251,7 +252,7 @@ ${dateFormat(new Date(i.createdAt))}
             ${i.description}
             </p>
             <p class="post-date">
-            ${dateFormat(new Date(i.createdAt))}
+            ${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
             </p>
             </li>
             </ul>
@@ -514,7 +515,7 @@ export function userPageOpen(appEl) {
     ${i.description}
 </p>
 <p class="post-date">
-  ${dateFormat(new Date(i.createdAt))}
+  ${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
 </p>
 </li>
 </ul>
@@ -575,7 +576,7 @@ export function userPageOpen(appEl) {
               ${i.description}
           </p>
           <p class="post-date">
-            ${dateFormat(new Date(i.createdAt))}
+            ${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
           </p>
         </li>
         </ul>
@@ -738,7 +739,7 @@ export function reRenderPostsUser(data) {
 ${i.description}
 </p>
 <p class="post-date">
-${dateFormat(new Date(i.createdAt))}
+${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
 </p>
 </li>
 </ul>
@@ -799,7 +800,7 @@ ${dateFormat(new Date(i.createdAt))}
             ${i.description}
             </p>
             <p class="post-date">
-            ${dateFormat(new Date(i.createdAt))}
+            ${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
             </p>
             </li>
             </ul>

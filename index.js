@@ -1,6 +1,6 @@
 import { getPosts } from "./api.js";
-//import { format } from "date-fns";
-import { dateFormat } from "../helpers.js";
+import { format } from "date-fns";
+//import { dateFormat } from "../helpers.js";
 import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
 import { renderAuthPageComponent } from "./components/auth-page-component.js";
 import {
@@ -180,7 +180,7 @@ const renderApp = () => {
   ${i.description}
   </p>
   <p class="post-date">
-  ${dateFormat(new Date(i.createdAt))}
+  ${format(new Date(i.createdAt), "dd/MM/yyyy hh:mm")}
   </p>
   </li>
   </ul>
