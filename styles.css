@@ -189,10 +189,29 @@
   border: 1px solid gray;
   border-radius: 5px;
 }
+.file-upload-image-big {
+  display: none;
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+.post-image-load{
+  display: flex;
+  flex-direction: column;
+}
+.image-comment-block{
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+  
 
 .file-upload-label {
   display: inline-block;
   box-sizing: border-box;
-  width: 100%;
+  width: 300px;
   text-align: center;
 }

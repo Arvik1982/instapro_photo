@@ -3,9 +3,8 @@
 const personalKey = "prod";
 const baseHost = "https://webdev-hw-api.vercel.app";
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
-
 export function getPosts({ token }) {
-  return fetch(postsHost, {
+  return fetch(`https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro`, {
     method: "GET",
     headers: {
       Authorization: token,
@@ -20,6 +19,34 @@ export function getPosts({ token }) {
     })
     .then((data) => {
       return data.posts;
+    })
+    .catch((err) => {
+      alert(`${err.message}`);
+    });
+}
+
+export function getUserPosts({ token }) {
+  return fetch(
+    `https://wedev-api.sky.pro/api/v1/arseny-kulikov/instapro/user-posts/${posts[index].id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: token,
+      },
+    }
+  )
+    .then((response) => {
+      if (response.status === 401) {
+        throw new Error("Нет авторизации");
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      return data.posts;
+    })
+    .catch((err) => {
+      alert(`${err.message}`);
     });
 }
 
@@ -37,6 +64,7 @@ export function registerUser({ login, password, name, imageUrl }) {
     if (response.status === 400) {
       throw new Error("Такой пользователь уже существует");
     }
+
     return response.json();
   });
 }
@@ -49,9 +77,11 @@ export function loginUser({ login, password }) {
       password,
     }),
   }).then((response) => {
+    //console.log(response)
     if (response.status === 400) {
       throw new Error("Неверный логин или пароль");
     }
+
     return response.json();
   });
 }
