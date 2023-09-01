@@ -13,3 +13,4 @@ https://arvik1982.github.io/webdev-cw-instapro-arseny/
 ## Фактически затраченное время
 
 70 часов
+
